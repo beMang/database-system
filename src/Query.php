@@ -1,6 +1,6 @@
 <?php
 
-namespace bemang;
+namespace bemang\Database;
 
 class Query
 {
