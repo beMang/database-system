@@ -1,0 +1,20 @@
+{
+    "name": "bemang/database-system",
+    "description": "Librairie pour la gestion de base de donn\u0000es",
+    "type": "library",
+    "license": "MIT",
+    "authors": [{
+        "name": "beMang",
+        "email": "antonuttiadrien@gmail.com"
+    }],
+    "minimum-stability": "dev",
+    "require": {
+        "bemang/config-system": "^1.0",
+        "phpunit/phpunit": "^7.2@dev"
+    },
+    "autoload": {
+        "psr-4": {
+            "bemang\\Database\\": "src"
+        }
+    }
+}

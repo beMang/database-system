@@ -1,0 +1,27 @@
+language: php
+
+php:
+  - 7.2.5
+  - 7.1.9
+
+matrix:
+  allow_failures:
+    - php: 7.1.9
+
+services:
+  - mysql
+
+install:
+  - composer install
+  - composer dump -o
+
+cache:
+  directories:
+  - vendor
+
+script:
+  - ./vendor/bin/phpunit --coverage-clover build/logs/clover.xml
+
+after_success:
+  - composer require php-coveralls/php-coveralls
+  - travis_retry php vendor/bin/php-coveralls

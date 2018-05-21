@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<phpunit colors="true">
+    <testsuite name="phpGone test">
+        <directory suffic=".php">tests</directory>
+    </testsuite>
+    <filter>
+        <whitelist proceessUncoveredFromWithelist="true">
+            <directory suffic=".php">src</directory>
+        </whitelist>
+    </filter>
+</phpunit>
