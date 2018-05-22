@@ -10,10 +10,21 @@ class DBManager
     protected $configInstance;
     static protected $selfInstance = null;
 
-    public function __construct(ConfigInterface $config)
+    public function __construct(ConfigInterface $config = null)
     {
-        $this->setConfig($config);
-        //$this->addDatabase(); Initialize default db in config
+        if (!is_null($config)) {
+            $this->setConfig($config);
+            if ($this->getConfig()->has('database.host') === true &&
+                $this->getConfig()->has('database.user') === true &&
+                $this->getConfig()->has('database.password') === true ) {
+                    $this->addDatabase(
+                        'default',
+                        $this->getConfig()->get('database.host'),
+                        $this->getConfig()->get('database.user'),
+                        $this->getConfig()->get('database.password')
+                    );
+            }
+        }
     }
 
     public static function getInstance(ConfigInterface $config = null)
@@ -112,5 +123,10 @@ class DBManager
     public function setConfig(ConfigInterface $config)
     {
         $this->configInstance = $config;
+    }
+
+    public function getConfig()
+    {
+        return $this->configInstance;
     }
 }
