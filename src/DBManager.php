@@ -25,6 +25,7 @@ class DBManager
                     );
             }
         }
+        self::$selfInstance = $this;
     }
 
     public static function getInstance(ConfigInterface $config = null)
