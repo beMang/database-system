@@ -9,8 +9,10 @@
     }],
     "minimum-stability": "dev",
     "require": {
-        "bemang/config-system": "^1.0",
-        "phpunit/phpunit": "^7.2@dev"
+        "bemang/config-system": "^1.0"
+    },
+    "suggest": {
+        "phpunit/phpunit": "^6.5"
     },
     "autoload": {
         "psr-4": {

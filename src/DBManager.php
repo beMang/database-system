@@ -1,21 +1,41 @@
 <?php
 
-namespace bemang;
+namespace bemang\Database;
+
+use bemang\ConfigInterface;
 
 class DBManager
 {
     protected $pdoInstances = [];
+    protected $configInstance;
     static protected $selfInstance = null;
 
-    public function __construct()
+    public function __construct(ConfigInterface $config = null)
     {
-        //$this->addDatabase(); Initialize default db in config
+        if (!is_null($config)) {
+            $this->setConfig($config);
+            if ($this->getConfig()->has('database.host') === true &&
+                $this->getConfig()->has('database.user') === true &&
+                $this->getConfig()->has('database.password') === true ) {
+                    $this->addDatabase(
+                        'default',
+                        $this->getConfig()->get('database.host'),
+                        $this->getConfig()->get('database.user'),
+                        $this->getConfig()->get('database.password')
+                    );
+            }
+        }
+        self::$selfInstance = $this;
     }
 
-    public static function getInstance()
+    public static function getInstance(ConfigInterface $config = null)
     {
         if (is_null(DBManager::$selfInstance)) {
-            DBManager::$selfInstance = new DBManager();
+            if (!is_null($config)) {
+                DBManager::$selfInstance = new DBManager($config);
+            } else {
+                throw new \Exception('Lors de la première récupération d\'instance, $config doit être défini');
+            }
             return DBManager::$selfInstance;
         } else {
             return DBManager::$selfInstance;
@@ -99,5 +119,15 @@ class DBManager
         }
         $query->setFetchMode(\PDO::FETCH_OBJ);
         return $query->fetchAll();
+    }
+
+    public function setConfig(ConfigInterface $config)
+    {
+        $this->configInstance = $config;
+    }
+
+    public function getConfig()
+    {
+        return $this->configInstance;
     }
 }

@@ -2,8 +2,9 @@
 
 namespace Test;
 
-use \bemang\Database\Query;
-use \bemang\Database\DBManager;
+use bemang\Config;
+use bemang\Database\Query;
+use bemang\Database\DBManager;
 
 class DatabaseTest extends \PHPUnit\Framework\TestCase
 {
@@ -42,9 +43,16 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
         $pdo->prepare('DROP DATABASE `test`')->execute();
     }
 
-    public function testConfigSystem()
+    public function testWithEmptyConfig()
     {
+        $this->expectExceptionMessage('Lors de la première récupération d\'instance, $config doit être défini');
         $manager = DBManager::getInstance();
+    }
+
+    public function testInitAndAddDatabase()
+    {
+        $config = new Config();
+        $manager = DBManager::getInstance($config);
         $this->assertTrue($manager->addDatabase('base', 'mysql:host=localhost;dbname=test', 'root', ''));
     }
 
