@@ -33,6 +33,7 @@ class DBManager
         if (is_null(self::$selfInstance)) {
             if (!is_null($config)) {
                 self::$selfInstance = new DBManager($config);
+                return self::$selfInstance;
             } else {
                 throw new \Exception('Aucune configuration donnée'); //TODO : exception database
             }
