@@ -2,11 +2,11 @@
 
 <phpunit colors="true">
     <testsuite name="database test">
-        <directory suffic=".php">tests</directory>
+        <directory suffix=".php">tests</directory>
     </testsuite>
     <filter>
-        <whitelist proceessUncoveredFromWithelist="true">
-            <directory suffic=".php">src</directory>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">src</directory>
         </whitelist>
     </filter>
 </phpunit>
