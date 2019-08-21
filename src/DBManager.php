@@ -24,25 +24,25 @@ class DBManager
                         $this->getConfig()->get('database.password')
                     );
             }
+            self::$selfInstance = $this;
         }
-        self::$selfInstance = $this;
     }
 
     public static function getInstance(ConfigInterface $config = null)
     {
-        if (is_null(DBManager::$selfInstance)) {
+        if (is_null(self::$selfInstance)) {
             if (!is_null($config)) {
-                DBManager::$selfInstance = new DBManager($config);
+                self::$selfInstance = new DBManager($config);
+                return self::$selfInstance;
             } else {
-                throw new \Exception('Lors de la première récupération d\'instance, $config doit être défini');
+                throw new \Exception('Aucune configuration donnée'); //TODO : exception database
             }
-            return DBManager::$selfInstance;
         } else {
-            return DBManager::$selfInstance;
+            return self::$selfInstance;
         }
     }
 
-    public function addDatabase($name, $hostAndDb = 'mysql:host=localhost;dbname=test', $user = 'root', $passwd = '')
+    public function addDatabase($name, $hostAndDb = 'mysql:host=localhost;dbname=test', $user = 'root', $passwd = '') :bool
     {
         if (is_string($name) && !empty($name)) {
             if ($this->dataBaseExist($name) == false) {
@@ -52,8 +52,7 @@ class DBManager
                     $passwd,
                     [\PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"]
                 );
-                $pdoInstance->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-                $this->defineClasses($name, $pdoInstance);
+                $pdoInstance->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION); //Affichage des erreurs
                 $this->pdoInstances [$name] = $pdoInstance;
                 return true;
             } else {
@@ -64,7 +63,7 @@ class DBManager
         }
     }
 
-    public function getDatabase($name)
+    public function getDatabase($name) :\PDO
     {
         if (is_string($name)) {
             if (isset($this->pdoInstances[$name])) {
@@ -77,7 +76,7 @@ class DBManager
         }
     }
 
-    public function dataBaseExist($name)
+    public function dataBaseExist($name) :bool
     {
         if (is_string($name)) {
             if (isset($this->pdoInstances[$name])) {
@@ -90,21 +89,7 @@ class DBManager
         }
     }
 
-    private function defineClasses($name, \PDO $pdoInstance)
-    {
-        $tables = $pdoInstance->query('SHOW TABLES')->fetchAll();
-        foreach ($tables as $table) {
-            $columns = $pdoInstance->query('SHOW COLUMNS FROM ' . $table[0])->fetchAll();
-            $classcode = 'class ' . $name . '_' . $table[0] .' { ';
-            foreach ($columns as $column) {
-                $classcode .= 'public $' . $column['Field'] . ';';
-            }
-            $classcode .= "} ";
-            eval($classcode);
-        }
-    }
-
-    public function sql($sqlQuery, $params = false, $db = 'base')
+    public function sql($sqlQuery, $params = false, $db = 'default')
     {
         $db = $this->getDatabase($db);
         $query = $db->prepare($sqlQuery);

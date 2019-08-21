@@ -1,6 +1,6 @@
 {
     "name": "bemang/database-system",
-    "description": "Librairie pour la gestion de base de donn\u0000es",
+    "description": "Librairie pour la gestion de bdd",
     "type": "library",
     "license": "MIT",
     "authors": [{
