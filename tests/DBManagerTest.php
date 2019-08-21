@@ -3,7 +3,6 @@
 namespace Test;
 
 use bemang\Config;
-use bemang\Database\Query;
 use bemang\Database\DBManager;
 
 class DatabaseTest extends \PHPUnit\Framework\TestCase
