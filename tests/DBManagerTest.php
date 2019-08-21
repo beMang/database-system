@@ -13,7 +13,7 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass() :void
     {
         require(dirname(__FILE__) . '/../vendor/autoload.php');
         $pdo = new \PDO('mysql:host=localhost', 'root', '', [
@@ -45,7 +45,7 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public static function tearDownAfterClass()
+    public static function tearDownAfterClass() :void
     {
         $pdo = new \PDO('mysql:host=localhost', 'root', '', [
             \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
@@ -55,14 +55,30 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
 
     public function testWithEmptyConfig()
     {
-        $this->expectExceptionMessage('Aucune configuration donnée');
+        $this->expectExceptionMessage('Le manager doit d\'abord être configuré avant d\'être utilisé');
         $manager = DBManager::getInstance();
     }
 
-    public function testInitAndAddDatabase()
+    public function testInvalidConfig()
     {
+        $this->expectExceptionMessage('Le champ databases n\'existe pas dans cette configuration');
         $config = new Config();
-        $manager = DBManager::getInstance($config);
+        $this->assertFalse(DBManager::config($config));
+    }
+
+    public function testValidConfig()
+    {
+        $config = new Config([
+            'databases' => [
+                'test' => ['mysql:host=localhost;dbname=test', 'root', '']
+            ]
+        ]);
+        $this->assertTrue(DBManager::config($config));
+    }
+
+    public function testAddDatabase()
+    {
+        $manager = DBManager::getInstance();
         $this->assertTrue($manager->addDatabase('base', 'mysql:host=localhost;dbname=test', 'root', ''));
     }
 

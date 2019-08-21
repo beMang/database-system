@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 
-<phpunit colors="true">
+<phpunit colors="true" cacheResult="false">
     <testsuite name="database test">
         <directory suffix=".php">tests</directory>
     </testsuite>

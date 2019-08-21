@@ -8,38 +8,53 @@ class DBManager
 {
     protected $pdoInstances = [];
     protected $configInstance;
-    static protected $selfInstance = null;
+    protected static $selfInstance = null;
 
-    public function __construct(ConfigInterface $config = null)
+    public function __construct(ConfigInterface $config)
     {
-        if (!is_null($config)) {
-            $this->setConfig($config);
-            if ($this->getConfig()->has('database.host') === true &&
-                $this->getConfig()->has('database.user') === true &&
-                $this->getConfig()->has('database.password') === true ) {
+        $this->setConfig($config);
+        if ($this->getConfig()->has('databases') === true) {
+            foreach ($this->getConfig()->get('databases') as $databaseName => $databaseInfos) {
+                if (is_array($databaseInfos) 
+                && isset($databaseInfos[0])
+                && isset($databaseInfos[1])
+                && isset($databaseInfos[2])) {
                     $this->addDatabase(
-                        'default',
-                        $this->getConfig()->get('database.host'),
-                        $this->getConfig()->get('database.user'),
-                        $this->getConfig()->get('database.password')
+                        $databaseName,
+                        $databaseInfos[0],
+                        $databaseInfos[1],
+                        $databaseInfos[2]
                     );
+                } else {
+                    throw new \Exception("La bdd $databaseName est mal configurée", 1);
+                }
             }
-            self::$selfInstance = $this;
+            //ATTENTION : vérifier les champs de databases
+        } else {
+            throw new \Exception('Le champ databases n\'existe pas dans cette configuration');
         }
+        self::$selfInstance = $this;
     }
 
-    public static function getInstance(ConfigInterface $config = null)
+    public static function getInstance() :DBManager
     {
         if (is_null(self::$selfInstance)) {
-            if (!is_null($config)) {
-                self::$selfInstance = new DBManager($config);
-                return self::$selfInstance;
-            } else {
-                throw new \Exception('Aucune configuration donnée'); //TODO : exception database
-            }
+            throw new \Exception('Le manager doit d\'abord être configuré avant d\'être utilisé'); //TODO : exception database
         } else {
             return self::$selfInstance;
         }
+    }
+
+    /**
+     * Permet de configurer le manager
+     *
+     * @param ConfigInterface $config
+     * @return bool
+     */
+    public static function config(ConfigInterface $config) :bool
+    {
+        $instance = new DBManager($config);
+        return !is_null(DBManager::getInstance());
     }
 
     public function addDatabase($name, $hostAndDb = 'mysql:host=localhost;dbname=test', $user = 'root', $passwd = '') :bool
@@ -106,7 +121,7 @@ class DBManager
         return $query->fetchAll();
     }
 
-    public function setConfig(ConfigInterface $config)
+    protected function setConfig(ConfigInterface $config)
     {
         $this->configInstance = $config;
     }
