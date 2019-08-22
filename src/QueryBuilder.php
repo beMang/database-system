@@ -28,6 +28,9 @@ class QueryBuilder
 
     protected $limit;
 
+    protected $insert = []; //Valeurs données
+    protected $values = []; //Valeurs de sortie
+
     public function __construct()
     {
         return $this;
@@ -42,7 +45,9 @@ class QueryBuilder
     {
         if ($this->selects) {
             return $this->buildSelect();
-        } else {
+        } if ($this->insert) {
+            return $this->buildInsert();
+        }else {
             return 'error';
         }
     }
@@ -53,7 +58,7 @@ class QueryBuilder
         return $this;
     }
 
-    public function from(string $table, string $alias = null) :self
+    public function setTable(string $table, string $alias = null) :self
     {
         if ($alias) {
             $this->table[$alias] = $table;
@@ -77,17 +82,23 @@ class QueryBuilder
 
     public function insert(array $infos) :self
     {
+        $this->insert = $infos;
+        return $this;
+    }
 
+    public function getValues() :array
+    {
+        return $this->values;
     }
 
     public function update(array $infos) :self
     {
-
+        return $this;
     }
 
     public function delete()
     {
-
+        return $this;
     }
 
     protected function buildSelect() :string
@@ -107,7 +118,7 @@ class QueryBuilder
         $fromParts;
         foreach ($this->table as $key => $table) {
             if (is_string($key)) {
-                $fromParts = '' . $table . ' AS ' . $key . '';
+                $fromParts = $table . ' AS ' . $key;
             } elseif (is_numeric($key)) {
                 $fromParts = $table;
             } else {
@@ -118,5 +129,39 @@ class QueryBuilder
             'FROM',
             $fromParts
         ]);
+    }
+
+    protected function buildInsert() :string
+    {
+        $parts = ['INSERT INTO'];
+        $parts[] = $this->table[0];
+        $keys = [];
+        $values = [];
+        $requestValue = [];
+        $counter = 0;
+        foreach ($this->insert as $key => $value) {
+            $counter ++;
+            $keys[] = $key;
+            $values[] = $value;
+            $requestValue[] = ':v' . $counter;
+        }
+        $parts[] = '('. join(', ', $keys) . ')';
+        $parts[] = 'VALUES(' . join(', ', $requestValue) . ')';
+        $this->setValues($requestValue, $values);
+        return join(' ', $parts);
+    }
+
+    protected function setValues(array $requestValue, array $values) :bool
+    {
+        if (sizeof($requestValue) === sizeof($values)) {
+            $result = [];
+            foreach ($requestValue as $key => $value) {
+                $result[$value] = $values[$key];
+            }
+            $this->values = $result;
+            return true;
+        } else {
+            return false;
+        }
     }
 }
