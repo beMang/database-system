@@ -50,4 +50,13 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
             ':v2' => 'test@example.com'
         ], $query->getValues());
     }
+
+    public function testSimpleUpdate()
+    {
+        $query = (new QueryBuilder())->update([
+            'pseudo' => 'beMang',
+            'mail' => 'mail@example.com'
+        ])->setTable('user')->where('id = :3');
+        $this->assertEquals('UPDATE user SET pseudo = :v1, mail = :v2 WHERE (id = :3)', (string)$query);
+    }
 }

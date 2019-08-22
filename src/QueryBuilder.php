@@ -28,8 +28,11 @@ class QueryBuilder
 
     protected $limit;
 
-    protected $insert = []; //Valeurs données
-    protected $values = []; //Valeurs de sortie
+    protected $insert = [];
+
+    protected $update = [];
+
+    protected $values = []; //Valeurs de sortie pour update et insert
 
     public function __construct()
     {
@@ -44,12 +47,15 @@ class QueryBuilder
     public function __toString() :string
     {
         if ($this->selects) {
-            return $this->buildSelect();
-        } if ($this->insert) {
-            return $this->buildInsert();
-        }else {
-            return 'error';
+            $result = $this->buildSelect();
+        } elseif ($this->insert) {
+            $result = $this->buildInsert();
+        } elseif($this->update) {
+            $result = $this->buildUpdate();
+        } else {
+            $result = 'error';
         }
+        return trim($result);
     }
 
     public function select(string ...$fields) :self
@@ -93,6 +99,7 @@ class QueryBuilder
 
     public function update(array $infos) :self
     {
+        $this->update = $infos;
         return $this;
     }
 
@@ -106,10 +113,7 @@ class QueryBuilder
         $parts = ['SELECT'];
         $parts[] = join(', ', $this->selects);
         $parts[] = $this->buildFrom();
-        if ($this->conditions) {
-            $parts[] = 'WHERE';
-            $parts[] = '(' . join(') AND (', $this->conditions) . ')';
-        }
+        $parts[] = $this->buildConditions();
         return join(' ', $parts);
     }
 
@@ -149,6 +153,36 @@ class QueryBuilder
         $parts[] = 'VALUES(' . join(', ', $requestValue) . ')';
         $this->setValues($requestValue, $values);
         return join(' ', $parts);
+    }
+
+    protected function buildUpdate() :string
+    {
+        $parts = ['UPDATE'];
+        $parts[] = $this->table[0];
+        $parts[] = 'SET';
+        $parts[] = $this->buildUpdateValues($this->update);
+        $parts[] = $this->buildConditions();
+        return join(' ', $parts);
+    }
+
+    protected function buildUpdateValues(array $values) :string
+    {
+        $parts = [];
+        $counter = 0;
+        foreach ($values as $key => $value) {
+            $counter ++;
+            $parts[] = $key . ' = :v' . $counter;
+        }
+        return join(', ', $parts);
+    }
+
+    protected function buildConditions() :string
+    {
+        if ($this->conditions) {
+           return 'WHERE (' . join(') AND (', $this->conditions) . ')';
+        } else {
+            return '';
+        }
     }
 
     protected function setValues(array $requestValue, array $values) :bool
