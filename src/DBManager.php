@@ -15,7 +15,7 @@ class DBManager
         $this->setConfig($config);
         if ($this->getConfig()->has('databases') === true) {
             foreach ($this->getConfig()->get('databases') as $databaseName => $databaseInfos) {
-                if (is_array($databaseInfos) 
+                if (is_array($databaseInfos)
                 && isset($databaseInfos[0])
                 && isset($databaseInfos[1])
                 && isset($databaseInfos[2])) {
