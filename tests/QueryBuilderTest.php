@@ -9,7 +9,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     public function testSimpleSelectQuery()
     {
         $query = (new QueryBuilder())->from('post')->select('name', 'num');
-        $this->assertEquals('SELECT name, num FROM post', (string)$query, );
+        $this->assertEquals('SELECT name, num FROM post', (string)$query);
 
         $query = (new QueryBuilder())->from('post')->select('*');
         $this->assertEquals('SELECT * FROM post', (string)$query);
