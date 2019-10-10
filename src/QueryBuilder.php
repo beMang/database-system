@@ -3,13 +3,9 @@
 namespace bemang\Database;
 
 /**
- * FEATURE A INTEGRER
+ * TODO LIST
  * 
  *  JOINTURE
- * 
- *  UPDATE
- * 
- *  INSERT
  * 
  *  DELETE
  */
@@ -92,17 +88,20 @@ class QueryBuilder
         return $this;
     }
 
-    public function getValues() :array
-    {
-        return $this->values;
-    }
-
     public function update(array $infos) :self
     {
         $this->update = $infos;
         return $this;
     }
 
+    public function getValues() :array
+    {
+        return $this->values;
+    }
+
+    /**
+     * TODO
+     */
     public function delete()
     {
         return $this;

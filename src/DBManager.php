@@ -4,6 +4,8 @@ namespace bemang\Database;
 
 use bemang\ConfigInterface;
 
+//TODO : exception propre à cette librairie
+
 class DBManager
 {
     protected $pdoInstances = [];
@@ -16,7 +18,7 @@ class DBManager
         if ($this->getConfig()->has('databases') === true) {
             foreach ($this->getConfig()->get('databases') as $databaseName => $databaseInfos) {
                 if (is_array($databaseInfos)
-                && isset($databaseInfos[0])
+                && isset($databaseInfos[0]) //TO DO VERFIER LA SYNTAXE
                 && isset($databaseInfos[1])
                 && isset($databaseInfos[2])) {
                     $this->addDatabase(
@@ -29,7 +31,6 @@ class DBManager
                     throw new \Exception("La bdd $databaseName est mal configurée", 1);
                 }
             }
-            //ATTENTION : vérifier les champs de databases
         } else {
             throw new \Exception('Le champ databases n\'existe pas dans cette configuration');
         }
@@ -39,14 +40,14 @@ class DBManager
     public static function getInstance() :DBManager
     {
         if (is_null(self::$selfInstance)) {
-            throw new \Exception('Le manager doit d\'abord être configuré avant d\'être utilisé'); //TODO : exception database
+            throw new \Exception('Le manager doit d\'abord être configuré avant d\'être utilisé');
         } else {
             return self::$selfInstance;
         }
     }
 
     /**
-     * Permet de configurer le manager
+     * Configure le manager
      *
      * @param ConfigInterface $config
      * @return bool
@@ -56,7 +57,14 @@ class DBManager
         $instance = new DBManager($config);
         return !is_null(DBManager::getInstance());
     }
-
+    
+    /**
+     * Ajoute une bdd au manager
+     * 
+     * bdd en utf8 et affichage des exceptions
+     * 
+     * @return bool
+     */
     public function addDatabase($name, $hostAndDb = 'mysql:host=localhost;dbname=test', $user = 'root', $passwd = '') :bool
     {
         if (is_string($name) && !empty($name)) {
@@ -78,6 +86,12 @@ class DBManager
         }
     }
 
+
+    /**
+     * Récupère une bdd
+     * 
+     * @return \PDO
+     */
     public function getDatabase($name) :\PDO
     {
         if (is_string($name)) {
@@ -91,6 +105,11 @@ class DBManager
         }
     }
 
+    /**
+     * Vérifie si une bdd existe
+     * 
+     * @return bool
+     */
     public function dataBaseExist($name) :bool
     {
         if (is_string($name)) {
@@ -126,6 +145,11 @@ class DBManager
         $this->configInstance = $config;
     }
 
+    /**
+     * Récupère la configuration utilisée par le manager
+     * 
+     * @return ConfigInterface
+     */
     public function getConfig()
     {
         return $this->configInstance;
