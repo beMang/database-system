@@ -12,7 +12,7 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public static function setUpBeforeClass() :void
+    public static function setUpBeforeClass(): void
     {
         require(dirname(__FILE__) . '/../vendor/autoload.php');
         $pdo = new \PDO('mysql:host=localhost', 'root', '', [
@@ -44,7 +44,7 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public static function tearDownAfterClass() :void
+    public static function tearDownAfterClass(): void
     {
         $pdo = new \PDO('mysql:host=localhost', 'root', '', [
             \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,

@@ -17,10 +17,12 @@ class DBManager
         $this->setConfig($config);
         if ($this->getConfig()->has('databases') === true) {
             foreach ($this->getConfig()->get('databases') as $databaseName => $databaseInfos) {
-                if (is_array($databaseInfos)
-                && isset($databaseInfos[0]) //TO DO VERFIER LA SYNTAXE
-                && isset($databaseInfos[1])
-                && isset($databaseInfos[2])) {
+                if (
+                    is_array($databaseInfos)
+                    && isset($databaseInfos[0]) //TO DO VERFIER LA SYNTAXE
+                    && isset($databaseInfos[1])
+                    && isset($databaseInfos[2])
+                ) {
                     $this->addDatabase(
                         $databaseName,
                         $databaseInfos[0],
@@ -37,7 +39,7 @@ class DBManager
         self::$selfInstance = $this;
     }
 
-    public static function getInstance() :DBManager
+    public static function getInstance(): DBManager
     {
         if (is_null(self::$selfInstance)) {
             throw new \Exception('Le manager doit d\'abord être configuré avant d\'être utilisé');
@@ -52,7 +54,7 @@ class DBManager
      * @param ConfigInterface $config
      * @return bool
      */
-    public static function config(ConfigInterface $config) :bool
+    public static function config(ConfigInterface $config): bool
     {
         $instance = new DBManager($config);
         return !is_null(DBManager::getInstance());
@@ -60,12 +62,12 @@ class DBManager
     
     /**
      * Ajoute une bdd au manager
-     * 
+     *
      * bdd en utf8 et affichage des exceptions
-     * 
+     *
      * @return bool
      */
-    public function addDatabase($name, $hostAndDb = 'mysql:host=localhost;dbname=test', $user = 'root', $passwd = '') :bool
+    public function addDatabase($name, $hostAndDb = 'mysql:host=localhost;dbname=test', $user = 'root', $passwd = ''): bool
     {
         if (is_string($name) && !empty($name)) {
             if ($this->dataBaseExist($name) == false) {
@@ -89,10 +91,10 @@ class DBManager
 
     /**
      * Récupère une bdd
-     * 
+     *
      * @return \PDO
      */
-    public function getDatabase($name) :\PDO
+    public function getDatabase($name): \PDO
     {
         if (is_string($name)) {
             if (isset($this->pdoInstances[$name])) {
@@ -107,10 +109,10 @@ class DBManager
 
     /**
      * Vérifie si une bdd existe
-     * 
+     *
      * @return bool
      */
-    public function dataBaseExist($name) :bool
+    public function dataBaseExist($name): bool
     {
         if (is_string($name)) {
             if (isset($this->pdoInstances[$name])) {
@@ -147,7 +149,7 @@ class DBManager
 
     /**
      * Récupère la configuration utilisée par le manager
-     * 
+     *
      * @return ConfigInterface
      */
     public function getConfig()
