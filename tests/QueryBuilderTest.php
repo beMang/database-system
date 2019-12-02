@@ -59,4 +59,10 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
         ])->setTable('user')->where('id = :3');
         $this->assertEquals('UPDATE user SET pseudo = :v1, mail = :v2 WHERE (id = :3)', (string)$query);
     }
+
+    public function testSimpleDelete()
+    {
+        $query = (new QueryBuilder())->delete('id = 9')->setTable('users');
+        $this->assertEquals('DELETE FROM users WHERE (id = 9)', (string)$query);
+    }
 }

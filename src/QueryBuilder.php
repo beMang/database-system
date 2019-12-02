@@ -28,6 +28,8 @@ class QueryBuilder
 
     protected $update = [];
 
+    protected $delete = [];
+
     protected $values = []; //Valeurs de sortie pour update et insert
 
     public function __construct()
@@ -48,6 +50,8 @@ class QueryBuilder
             $result = $this->buildInsert();
         } elseif ($this->update) {
             $result = $this->buildUpdate();
+        } elseif ($this->delete) {
+            $result = $this->buildDelete();
         } else {
             $result = 'error';
         }
@@ -99,11 +103,10 @@ class QueryBuilder
         return $this->values;
     }
 
-    /**
-     * TODO
-     */
-    public function delete()
+    public function delete(string ...$conditions): self
     {
+        $this->delete = true;
+        $this->conditions = $conditions;
         return $this;
     }
 
@@ -196,5 +199,13 @@ class QueryBuilder
         } else {
             return false;
         }
+    }
+
+    protected function buildDelete(): string
+    {
+        $parts = ['DELETE'];
+        $parts[] = $this->buildFrom();
+        $parts[] = $this->buildConditions();
+        return join(' ', $parts);
     }
 }
