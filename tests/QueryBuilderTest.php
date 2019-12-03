@@ -6,17 +6,25 @@ use bemang\Database\QueryBuilder;
 
 class QueryBuilderTest extends \PHPUnit\Framework\TestCase
 {
-    public function testSimpleSelectQuery()
+    public function testSelectQuery()
     {
         $query = (new QueryBuilder())->setTable('post')->select('name', 'num');
         $this->assertEquals('SELECT name, num FROM post', (string)$query);
 
         $query = (new QueryBuilder())->setTable('post')->select('*');
         $this->assertEquals('SELECT * FROM post', (string)$query);
-    }
 
-    public function testSelectQueryWithWhere()
-    {
+        //With order
+        $query = (new QueryBuilder())->setTable('post')->select('*')->order('title', 'DESC');
+        $this->assertEquals('SELECT * FROM post ORDER BY title DESC', (string)$query);
+
+        $query = (new QueryBuilder())->setTable('post')->select('*')->order('title', 'ASC');
+        $this->assertEquals('SELECT * FROM post ORDER BY title ASC', (string)$query);
+
+        $query = (new QueryBuilder())->setTable('post')->select('*')->order('title');
+        $this->assertEquals('SELECT * FROM post ORDER BY title ASC', (string)$query);
+
+        //Conditions test
         $query = (new QueryBuilder())->setTable('user')->select('*')->where(
             'mail = :mail@mail.com OR mail = :mail@gmail.com',
             'id = :3'

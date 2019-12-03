@@ -2,14 +2,6 @@
 
 namespace bemang\Database;
 
-/**
- * TODO LIST
- *
- *  JOINTURE
- *
- *  DELETE
- */
-
 class QueryBuilder
 {
     protected $selects = [];
@@ -20,7 +12,10 @@ class QueryBuilder
 
     protected $group = [];
 
-    protected $order;
+    protected $order = [
+        'by' => null,
+        'order' => 'ASC'
+    ];
 
     protected $limit;
 
@@ -55,7 +50,17 @@ class QueryBuilder
         } else {
             $result = 'error';
         }
-        return trim($result);
+        return $this->clearString($result);
+    }
+
+    /**
+     * Permet de nettoyer les espaces inutiles
+     */
+    protected function clearString(string $string) :string
+    {
+        $string = preg_replace('/\s+/', ' ', $string);
+        $string = trim($string);
+        return $string;
     }
 
     public function select(string ...$fields): self
@@ -83,6 +88,13 @@ class QueryBuilder
     public function count(string $column): self
     {
         $this->selects = ['COUNT(' . $column . ')'];
+        return $this;
+    }
+
+    public function order(string $field, string $order = 'ASC'): self
+    {
+        $this->order['by'] = $field;
+        $this->order['order'] = $order;
         return $this;
     }
 
@@ -116,6 +128,9 @@ class QueryBuilder
         $parts[] = join(', ', $this->selects);
         $parts[] = $this->buildFrom();
         $parts[] = $this->buildConditions();
+        if ($this->order['by']) {
+            $parts[] = $this->buildOrder();
+        }
         return join(' ', $parts);
     }
 
@@ -135,6 +150,11 @@ class QueryBuilder
             'FROM',
             $fromParts
         ]);
+    }
+
+    protected function buildOrder() :string
+    {
+        return 'ORDER BY ' . $this->order['by'] . ' ' . $this->order['order'];
     }
 
     protected function buildInsert(): string
