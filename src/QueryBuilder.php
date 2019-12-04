@@ -18,6 +18,7 @@ class QueryBuilder
     ];
 
     protected $limit;
+    protected $offset;
 
     protected $insert = [];
 
@@ -56,7 +57,7 @@ class QueryBuilder
     /**
      * Permet de nettoyer les espaces inutiles
      */
-    protected function clearString(string $string) :string
+    protected function clearString(string $string): string
     {
         $string = preg_replace('/\s+/', ' ', $string);
         $string = trim($string);
@@ -98,6 +99,13 @@ class QueryBuilder
         return $this;
     }
 
+    public function limit(int $limit, int $offset = null): self
+    {
+        $this->limit = $limit;
+        $this->offset = is_null($offset) ? null : $offset;
+        return $this;
+    }
+
     public function insert(array $infos): self
     {
         $this->insert = $infos;
@@ -131,6 +139,9 @@ class QueryBuilder
         if ($this->order['by']) {
             $parts[] = $this->buildOrder();
         }
+        if ($this->limit) {
+            $parts[] = $this->buildLimit();
+        }
         return join(' ', $parts);
     }
 
@@ -152,9 +163,15 @@ class QueryBuilder
         ]);
     }
 
-    protected function buildOrder() :string
+    protected function buildOrder(): string
     {
         return 'ORDER BY ' . $this->order['by'] . ' ' . $this->order['order'];
+    }
+
+    protected function buildLimit(): string
+    {
+        $offset = is_null($this->offset) ? null : ' OFFSET ' . $this->offset;
+        return 'LIMIT ' . $this->limit . $offset;
     }
 
     protected function buildInsert(): string

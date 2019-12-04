@@ -37,6 +37,16 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
             'id = :3'
         );
         $this->assertEquals('SELECT * FROM user AS u WHERE (mail = :mail@mail.com OR mail = :mail@gmail.com) AND (id = :3)', (string)$query);
+
+        //Limit test
+        $query = (new QueryBuilder())->setTable('user')->select('*')->limit(9, 0);
+        $this->assertEquals('SELECT * FROM user LIMIT 9 OFFSET 0', (string)$query);
+
+        $query = (new QueryBuilder())->setTable('user')->select('*')->limit(100);
+        $this->assertEquals('SELECT * FROM user LIMIT 100', (string)$query);
+
+        $query = (new QueryBuilder())->setTable('user')->select('*')->limit(50, 20);
+        $this->assertEquals('SELECT * FROM user LIMIT 50 OFFSET 20', (string)$query);
     }
 
     public function testCount()
