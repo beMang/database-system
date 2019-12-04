@@ -1,16 +1,16 @@
 <?php
 
-namespace bemang\Database;
+namespace bemang\Database\Builder;
 
-class QueryBuilder
+use \bemang\Database\Exceptions\QueryBuilderException;
+
+class Query
 {
     protected $selects = [];
 
     protected $table = [];
 
     protected $conditions = [];
-
-    protected $group = [];
 
     protected $order = [
         'by' => null,
@@ -154,7 +154,7 @@ class QueryBuilder
             } elseif (is_numeric($key)) {
                 $fromParts = $table;
             } else {
-                throw new Exception('Alias indadapté (les valeurs numériques sont déconseillées)');
+                throw new QueryBuilderException('Alias indadapté (les valeurs numériques sont déconseillées)');
             }
         }
         return join(' ', [

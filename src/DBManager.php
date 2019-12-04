@@ -67,8 +67,12 @@ class DBManager
      *
      * @return bool
      */
-    public function addDatabase($name, $hostAndDb = 'mysql:host=localhost;dbname=test', $user = 'root', $passwd = ''): bool
-    {
+    public function addDatabase(
+        $name,
+        $hostAndDb = 'mysql:host=localhost;dbname=test',
+        $user = 'root',
+        $passwd = ''
+    ): bool {
         if (is_string($name) && !empty($name)) {
             if ($this->dataBaseExist($name) == false) {
                 $pdoInstance = new \PDO(

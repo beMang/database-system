@@ -1,6 +1,6 @@
 <?php
 
-namespace Test;
+namespace tests;
 
 use bemang\Config;
 use bemang\Database\DBManager;
