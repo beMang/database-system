@@ -2,7 +2,7 @@
 
 namespace bemang\Database\Builder;
 
-use \bemang\Database\Exceptions\QueryBuilderException;
+use bemang\Database\Exceptions\QueryBuilderException;
 
 class Query
 {

@@ -91,7 +91,7 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
     public function testInvalidStringOnAddDatabase()
     {
         $manager = DBManager::getInstance();
-        $this->expectExceptionMessage('L\'identifiant de la db doit être une chaine de caractères non-vides');
+        $this->expectExceptionMessage('L\'identifiant de la db ne peut pas être vide');
         $manager->addDatabase(5757, 'mysql:host=localhost;dbname=test', 'root', '');
         $manager->addDatabase('', 'mysql:host=localhost;dbname=test', 'root', '');
     }
@@ -105,9 +105,9 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
 
     public function testGetInvalidStringDatabase()
     {
-        $this->expectExceptionMessage('L\'identifiant doit être une chaine de caractères');
+        $this->expectException(\TypeError::class);
         $manager = DBManager::getInstance();
-        $manager->getDatabase(55454);
+        $manager->getDatabase([55454]);
     }
 
     public function testDatabaseExist()

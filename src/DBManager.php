@@ -3,8 +3,7 @@
 namespace bemang\Database;
 
 use bemang\ConfigInterface;
-
-//TODO : exception propre à cette librairie
+use bemang\Database\Exceptions\DBManagerException;
 
 class DBManager
 {
@@ -19,7 +18,7 @@ class DBManager
             foreach ($this->getConfig()->get('databases') as $databaseName => $databaseInfos) {
                 if (
                     is_array($databaseInfos)
-                    && isset($databaseInfos[0]) //TO DO VERFIER LA SYNTAXE
+                    && isset($databaseInfos[0]) //TODO VERFIER LA SYNTAXE
                     && isset($databaseInfos[1])
                     && isset($databaseInfos[2])
                 ) {
@@ -30,11 +29,11 @@ class DBManager
                         $databaseInfos[2]
                     );
                 } else {
-                    throw new \Exception("La bdd $databaseName est mal configurée", 1);
+                    throw new DBManagerException("La bdd $databaseName est mal configurée", 1);
                 }
             }
         } else {
-            throw new \Exception('Le champ databases n\'existe pas dans cette configuration');
+            throw new DBManagerException('Le champ databases n\'existe pas dans cette configuration');
         }
         self::$selfInstance = $this;
     }
@@ -42,7 +41,7 @@ class DBManager
     public static function getInstance(): DBManager
     {
         if (is_null(self::$selfInstance)) {
-            throw new \Exception('Le manager doit d\'abord être configuré avant d\'être utilisé');
+            throw new DBManagerException('Le manager doit d\'abord être configuré avant d\'être utilisé');
         } else {
             return self::$selfInstance;
         }
@@ -68,12 +67,12 @@ class DBManager
      * @return bool
      */
     public function addDatabase(
-        $name,
+        string $name,
         $hostAndDb = 'mysql:host=localhost;dbname=test',
         $user = 'root',
         $passwd = ''
     ): bool {
-        if (is_string($name) && !empty($name)) {
+        if (!empty($name)) {
             if ($this->dataBaseExist($name) == false) {
                 $pdoInstance = new \PDO(
                     $hostAndDb,
@@ -85,10 +84,10 @@ class DBManager
                 $this->pdoInstances [$name] = $pdoInstance;
                 return true;
             } else {
-                throw new \RuntimeException('La base de donnée existe déjà.');
+                throw new DBManagerException('La base de donnée existe déjà.');
             }
         } else {
-            throw new \InvalidArgumentException('L\'identifiant de la db doit être une chaine de caractères non-vides');
+            throw new DBManagerException('L\'identifiant de la db ne peut pas être vide');
         }
     }
 
@@ -98,16 +97,12 @@ class DBManager
      *
      * @return \PDO
      */
-    public function getDatabase($name): \PDO
+    public function getDatabase(string $name): \PDO
     {
-        if (is_string($name)) {
-            if (isset($this->pdoInstances[$name])) {
+        if (isset($this->pdoInstances[$name])) {
                 return $this->pdoInstances[$name];
-            } else {
-                throw new \RuntimeException('La base de donnée est inexistante');
-            }
         } else {
-            throw new \InvalidArgumentException('L\'identifiant doit être une chaine de caractères');
+            throw new DBManagerException('La base de donnée est inexistante');
         }
     }
 
@@ -140,7 +135,7 @@ class DBManager
                 $query->execute($params);
             }
         } catch (\PDOException $e) {
-            throw new \Exception('Error sql');
+            throw new DBManagerException('Error sql');
         }
         $query->setFetchMode(\PDO::FETCH_OBJ);
         return $query->fetchAll();
