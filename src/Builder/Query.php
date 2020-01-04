@@ -17,6 +17,12 @@ class Query
         'order' => 'ASC'
     ];
 
+    protected $join = [
+        'type' => null,
+        'table' => null,
+        'on' => null
+    ];
+
     protected $limit;
     protected $offset;
 
@@ -92,6 +98,14 @@ class Query
         return $this;
     }
 
+    public function join(string $type = 'INNER', string $table, string ...$conditions): self
+    {
+        $this->join['type'] = $type;
+        $this->join['table'] = $table;
+        $this->join['on'] = $conditions;
+        return $this;
+    }
+
     public function order(string $field, string $order = 'ASC'): self
     {
         $this->order['by'] = $field;
@@ -135,6 +149,7 @@ class Query
         $parts = ['SELECT'];
         $parts[] = join(', ', $this->selects);
         $parts[] = $this->buildFrom();
+        $parts[] = $this->buildJoin();
         $parts[] = $this->buildConditions();
         if ($this->order['by']) {
             $parts[] = $this->buildOrder();
@@ -161,6 +176,17 @@ class Query
             'FROM',
             $fromParts
         ]);
+    }
+
+    protected function buildJoin(): string
+    {
+        if ($this->join['type']) {
+            $parts = [$this->join['type'] . ' JOIN ' . $this->join['table'] . ' ON'];
+            $parts[] = '(' . join(') AND (', $this->join['on']) . ')';
+            return join(' ', $parts);
+        } else {
+            return '';
+        }
     }
 
     protected function buildOrder(): string

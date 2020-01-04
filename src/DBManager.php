@@ -18,7 +18,7 @@ class DBManager
             foreach ($this->getConfig()->get('databases') as $databaseName => $databaseInfos) {
                 if (
                     is_array($databaseInfos)
-                    && isset($databaseInfos[0]) //TODO VERFIER LA SYNTAXE
+                    && isset($databaseInfos[0])
                     && isset($databaseInfos[1])
                     && isset($databaseInfos[2])
                 ) {

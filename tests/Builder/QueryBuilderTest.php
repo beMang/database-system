@@ -60,6 +60,15 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('SELECT * FROM user LIMIT 50 OFFSET 20', (string)$query);
     }
 
+    public function testJoin()
+    {
+        $query = (new Query())->setTable('user')->select('*')->join('INNER', 'jeux', 'jeux.user_id = user.id', 'jeux.nom = \'minercraft\'');
+        $this->assertEquals('SELECT * FROM user INNER JOIN jeux ON (jeux.user_id = user.id) AND (jeux.nom = \'minercraft\')', (string)$query);
+
+        $query = (new Query())->setTable('nom')->select('nom.nom, jeux.nom_jeux')->join('LEFT', 'jeux', 'jeux.id_proprio = nom.id');
+        $this->assertEquals('SELECT nom.nom, jeux.nom_jeux FROM nom LEFT JOIN jeux ON (jeux.id_proprio = nom.id)', (string)$query);
+    }
+
     public function testCount()
     {
         $query = (new Query())->count('pseudo')->setTable('user');
