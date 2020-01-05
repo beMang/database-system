@@ -40,11 +40,21 @@ class Query
     }
 
     /**
-     * Méthode pour récupérer la requête sous forme d'un chaîne de caractères
+     * Récupère sous forme de string
      *
      * @return String
      */
     public function __toString(): string
+    {
+        $this->toSql();
+    }
+
+    /**
+     * Méthode pour récupérer la requête sous forme d'un chaîne de caractères
+     *
+     * @return String
+     */
+    public function toSql():string
     {
         if ($this->selects) {
             $result = $this->buildSelect();
