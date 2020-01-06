@@ -1,9 +1,9 @@
 <?php
 
-namespace tests;
+namespace tests\Manager;
 
 use bemang\Config;
-use bemang\Database\DBManager;
+use bemang\Database\Manager\DBManager;
 
 class DatabaseTest extends \PHPUnit\Framework\TestCase
 {
@@ -14,7 +14,7 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
      */
     public static function setUpBeforeClass(): void
     {
-        require(dirname(__FILE__) . '/../vendor/autoload.php');
+        require(dirname(__FILE__) . '/../../vendor/autoload.php');
         $pdo = new \PDO('mysql:host=localhost', 'root', '', [
             \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
             \PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"]);

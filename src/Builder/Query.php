@@ -46,7 +46,7 @@ class Query
      */
     public function __toString(): string
     {
-        $this->toSql();
+        return $this->toSql();
     }
 
     /**
@@ -54,7 +54,7 @@ class Query
      *
      * @return String
      */
-    public function toSql():string
+    public function toSql(): string
     {
         if ($this->selects) {
             $result = $this->buildSelect();

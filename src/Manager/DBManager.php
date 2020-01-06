@@ -1,6 +1,6 @@
 <?php
 
-namespace bemang\Database;
+namespace bemang\Database\Manager;
 
 use bemang\ConfigInterface;
 use bemang\Database\Exceptions\DBManagerException;
@@ -124,20 +124,20 @@ class DBManager
         }
     }
 
-    public function sql($sqlQuery, $params = false, $db = 'default')
+    public function sql($sqlQuery, $db = 'default', array $params = null, $mode = \PDO::FETCH_OBJ)
     {
         $db = $this->getDatabase($db);
         $query = $db->prepare($sqlQuery);
         try {
-            if ($params == false) {
+            if (!$params) {
                 $query->execute();
             } else {
                 $query->execute($params);
             }
         } catch (\PDOException $e) {
-            throw new DBManagerException('Error sql');
+            throw new DBManagerException($e->getMessage());
         }
-        $query->setFetchMode(\PDO::FETCH_OBJ);
+        $query->setFetchMode($mode);
         return $query->fetchAll();
     }
 
