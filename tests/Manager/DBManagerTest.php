@@ -50,6 +50,11 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
             \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
             \PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"]);
         $pdo->prepare('DROP DATABASE `test`')->execute();
+        try {
+            DBManager::getInstance()->reset();
+        } catch (\Exception $e) {
+            //don't mind
+        }
     }
 
     public function testWithEmptyConfig()
@@ -116,5 +121,12 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($manager->dataBaseExist('base'));
         $this->assertFalse($manager->dataBaseExist(uniqid()));
         $this->assertFalse($manager->dataBaseExist(545));
+    }
+
+    public function testReset()
+    {
+        DBManager::getInstance()->reset();
+        $this->expectExceptionMessage('Le manager doit d\'abord être configuré avant d\'être utilisé');
+        $manager = DBManager::getInstance();
     }
 }

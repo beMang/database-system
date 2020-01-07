@@ -155,4 +155,14 @@ class DBManager
     {
         return $this->configInstance;
     }
+
+    /**
+     * Reset le manager à 0
+     *
+     * @return Void
+     */
+    public function reset(): void
+    {
+        self::$selfInstance = null;
+    }
 }
