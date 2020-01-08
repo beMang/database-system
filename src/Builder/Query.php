@@ -142,6 +142,12 @@ class Query
         return $this;
     }
 
+    public function addValue(string $key, $value) :self
+    {
+        $this->values[$key] = $value;
+        return $this;
+    }
+
     public function getValues(): array
     {
         return $this->values;
@@ -243,11 +249,16 @@ class Query
     protected function buildUpdateValues(array $values): string
     {
         $parts = [];
+        $requestValue = [];
+        $datas = [];
         $counter = 0;
         foreach ($values as $key => $value) {
             $counter++;
+            $requestValue[] = ':v' . $counter;
             $parts[] = $key . ' = :v' . $counter;
+            $datas[] = $value;
         }
+        $this->setValues($requestValue, $datas);
         return join(', ', $parts);
     }
 
@@ -260,17 +271,15 @@ class Query
         }
     }
 
-    protected function setValues(array $requestValue, array $values): bool
+    protected function setValues(array $requestValue, array $values)
     {
         if (sizeof($requestValue) === sizeof($values)) {
-            $result = [];
             foreach ($requestValue as $key => $value) {
-                $result[$value] = $values[$key];
+                $this->addValue($value, $values[$key]);
             }
-            $this->values = $result;
             return true;
         } else {
-            return false;
+            return false; //TODO : exception
         }
     }
 

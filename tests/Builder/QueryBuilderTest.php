@@ -94,8 +94,13 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
         $query = (new Query())->update([
             'pseudo' => 'beMang',
             'mail' => 'mail@example.com'
-        ])->setTable('user')->where('id = :3');
-        $this->assertEquals('UPDATE user SET pseudo = :v1, mail = :v2 WHERE (id = :3)', (string)$query);
+        ])->setTable('user')->where('id = :id')->addValue('id', 5);
+        $this->assertEquals('UPDATE user SET pseudo = :v1, mail = :v2 WHERE (id = :id)', (string)$query);
+        $this->assertEquals([
+            ':v1' => 'beMang',
+            ':v2' => 'mail@example.com',
+            'id' => 5
+        ], $query->getValues());
     }
 
     public function testSimpleDelete()
