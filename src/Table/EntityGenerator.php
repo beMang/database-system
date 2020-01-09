@@ -8,16 +8,14 @@ class EntityGenerator
 {
     public static function generate(string $tableName, string $databaseName, DBManager $manager): string
     {
+        if (class_exists('\bemang\\Database\\Table\Entities\\' . $tableName)) {
+            return '\bemang\\Database\\Table\Entities\\' . $tableName;
+        }
+
         $fields = EntityGenerator::getFieldsName($tableName, $databaseName, $manager);
 
         if (empty($fields)) {
             throw new \bemang\Database\Exceptions\TableException('La table n\'existe pas dans la base de donnée');
-        }
-
-        if (class_exists('\bemang\\Database\\Table\Entities\\' . $tableName)) {
-            throw new \bemang\Database\Exceptions\TableException(
-                'La classe de cette table a déjà été générée'
-            );
         }
 
         $parts = ['namespace bemang\Database\Table\Entities;'];
@@ -32,7 +30,9 @@ class EntityGenerator
     protected static function getFieldsName(string $tableName, string $databaseName, DBManager $manager): array
     {
         $query = 'select COLUMN_NAME from INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME =  :table';
-        $queryResults = $manager->sql($query, $databaseName, ['table' => $tableName]);
+        $query = $manager->sql($query, $databaseName, ['table' => $tableName]);
+        $query->setFetchMode(\PDO::FETCH_OBJ);
+        $queryResults = $query->fetchAll();
         $results = [];
         foreach ($queryResults as $object) {
             $results[] = $object->COLUMN_NAME;
@@ -44,7 +44,9 @@ class EntityGenerator
     {
         $attributes = [];
         foreach ($fields as $field) {
-            $attributes[] = 'protected $' . $field . ';';
+            if ($field != 'id') {
+                $attributes[] = 'protected $' . $field . ';';
+            }
         }
         return join('', $attributes);
     }
@@ -53,9 +55,14 @@ class EntityGenerator
     {
         $methods = [];
         foreach ($fieldsName as $field) {
-            $methods[] = 'public function get' . ucfirst(strtolower($field)) .
-            '(){return $this->' . $field . ';}';
+            if ($field != 'id') {
+                $methods[] = 'public function get' . ucfirst(strtolower($field)) .
+                '(){return $this->' . $field . ';}';
+                $methods[] = 'public function set' . ucfirst(strtolower($field)) .
+                '($parameter){$this->' . $field . ' = $parameter;}';
+            }
         }
+        $methods[] = 'public function getEntityClassName(){return __CLASS__;}';
         return join('', $methods);
     }
 }

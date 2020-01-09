@@ -142,7 +142,7 @@ class Query
         return $this;
     }
 
-    public function addValue(string $key, $value) :self
+    public function addValue(string $key, $value): self
     {
         $this->values[$key] = $value;
         return $this;

@@ -3,6 +3,7 @@
 namespace bemang\Database\Manager;
 
 use bemang\ConfigInterface;
+use bemang\Database\Builder\Query;
 use bemang\Database\Exceptions\DBManagerException;
 
 class DBManager
@@ -124,21 +125,16 @@ class DBManager
         }
     }
 
-    public function sql($sqlQuery, $db = 'default', array $params = null, $mode = \PDO::FETCH_OBJ)
+    public function sql($sqlQuery, $db, array $params = null): \PDOStatement
     {
         $db = $this->getDatabase($db);
         $query = $db->prepare($sqlQuery);
-        try {
-            if (!$params) {
-                $query->execute();
-            } else {
-                $query->execute($params);
-            }
-        } catch (\PDOException $e) {
-            throw new DBManagerException($e->getMessage());
+        if (!$params) {
+            $query->execute();
+        } else {
+            $query->execute($params);
         }
-        $query->setFetchMode($mode);
-        return $query->fetchAll();
+        return $query;
     }
 
     protected function setConfig(ConfigInterface $config)
@@ -164,5 +160,10 @@ class DBManager
     public function reset(): void
     {
         self::$selfInstance = null;
+    }
+
+    public function getBuilder(): Query
+    {
+        return new Query();
     }
 }

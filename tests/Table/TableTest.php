@@ -1,20 +1,30 @@
 <?php
 
-namespace tests\Table;
+namespace tests\Manager\Table;
 
-use PHPUnit\Framework\TestCase;
+use bemang\Config;
+use bemang\Database\Table;
 use bemang\Database\Manager\DBManager;
 use bemang\Database\Table\EntityGenerator;
 
-class EntityGeneratorTest extends TestCase
+class TableTest extends \PHPUnit\Framework\TestCase
 {
-    protected $attributes = ['id','name','surname', 'pseudo'];
+    /**
+     * Config utilisée pour le DBManager
+     *
+     * @var array
+     */
     protected static $config = [
             'databases' => [
                 'test' => ['mysql:host=localhost;dbname=test', 'root', '']
             ]
         ];
 
+    /**
+     * Préparation de la bdd pour les tests et du manager
+     *
+     * @return void
+     */
     public static function setUpBeforeClass(): void
     {
         require(dirname(__FILE__) . '/../../vendor/autoload.php');
@@ -27,10 +37,17 @@ class EntityGeneratorTest extends TestCase
             \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
             \PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"]);
         $pdo->prepare('CREATE TABLE user_test (
-                        id int NOT NULL AUTO_INCREMENT,
+                        id INT UNSIGNED NOT NULL AUTO_INCREMENT,
                         name varchar(255),
                         surname varchar(255),
                         pseudo varchar(48),
+                        PRIMARY KEY (id)
+                    )')->execute();
+        $pdo->prepare('CREATE TABLE test2 (
+                        id int NOT NULL AUTO_INCREMENT,
+                        value int,
+                        content varchar(255),
+                        user_id varchar(200),
                         PRIMARY KEY (id)
                     )')->execute();
         unset($pdo);
@@ -59,49 +76,14 @@ class EntityGeneratorTest extends TestCase
         }
     }
 
-    /** @test */
-    public function testGenerateClass()
-    {
-        $className = EntityGenerator::generate('user_test', 'tests', DBManager::getInstance());
-        $obj = new $className();
-        $good = true;
-        foreach ($this->attributes as $attribute) {
-            if ($attribute != 'id') {
-                $this->assertClassHasAttribute($attribute, $className);
-                if (!\method_exists($obj, 'get' . ucfirst(strtolower($attribute)))) {
-                    $good = false;
-                }
-                if (!\method_exists($obj, 'set' . ucfirst(strtolower($attribute)))) {
-                    $good = false;
-                }
-            }
-        }
-        $this->assertTrue($good);
-    }
 
-    /** @test */
-    public function testGenerateClassWithInexistantTable()
+    public function testCreationTable()
     {
-        $this->expectExceptionMessage('La table n\'existe pas dans la base de donnée');
-        $className = EntityGenerator::generate('lambda', 'tests', DBManager::getInstance());
-    }
-
-    public function testAlreadyGeneratedClass()
-    {
-        $className = EntityGenerator::generate('user_test', 'tests', DBManager::getInstance());
-        $obj = new $className();
-        $good = true;
-        foreach ($this->attributes as $attribute) {
-            if ($attribute != 'id') {
-                $this->assertClassHasAttribute($attribute, $className);
-                if (!\method_exists($obj, 'get' . ucfirst(strtolower($attribute)))) {
-                    $good = false;
-                }
-                if (!\method_exists($obj, 'set' . ucfirst(strtolower($attribute)))) {
-                    $good = false;
-                }
-            }
-        }
-        $this->assertTrue($good);
+        $table = new Table('user_test', 'tests');
+        $entity = $table->getNewEntity();
+        $table->insert($entity);
+        $entity->setId(1);
+        $inDB = DBManager::getInstance()->sql('SELECT * FROM user_test WHERE id = 1', 'tests')->fetch(\PDO::FETCH_ASSOC);
+        $this->assertEquals($entity->getAttribuesAsArray(), $inDB);
     }
 }
