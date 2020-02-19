@@ -85,5 +85,35 @@ class TableTest extends \PHPUnit\Framework\TestCase
         $entity->setId(1);
         $inDB = DBManager::getInstance()->sql('SELECT * FROM user_test WHERE id = 1', 'tests')->fetch(\PDO::FETCH_ASSOC);
         $this->assertEquals($entity->getAttribuesAsArray(), $inDB);
+        $table->insert($entity);
+    }
+
+    public function testFetch()
+    {
+        $table = new Table('user_test', 'tests');
+        $entity = $table->fetch(1);
+        $query = DBManager::getInstance()->sql('SELECT * FROM user_test WHERE id = 1', 'tests');
+        $query->setFetchMode(\PDO::FETCH_CLASS, $table->getEntityClassName());
+        $inDb = $query->fetch();
+        $this->assertEquals($inDb, $entity);
+    }
+
+    public function testFetchAll()
+    {
+        $table = new Table('user_test', 'tests');
+        $entities = $table->fetchAll();
+        $query = DBManager::getInstance()->sql('SELECT * FROM user_test', 'tests');
+        $inDb = $query->fetchAll(\PDO::FETCH_CLASS, $table->getEntityClassName());
+        $this->assertEquals($inDb, $entities);
+    }
+
+    public function testDeleteColumn()
+    {
+        $table = new Table('user_test', 'tests');
+        $entity = $table->getNewEntity();
+        $entity->setId(1);
+        $table->delete($entity);
+        $inDB = DBManager::getInstance()->sql('SELECT * FROM user_test WHERE id = 1', 'tests')->fetch(\PDO::FETCH_ASSOC);
+        $this->assertEquals(null, $inDB);
     }
 }
