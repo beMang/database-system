@@ -279,7 +279,7 @@ class Query
             }
             return true;
         } else {
-            return false; //TODO : exception
+            throw new QueryBuilderException('Ceci n\'est pas sensé arrivé (rapport avec les valeurs de la requête)');
         }
     }
 
