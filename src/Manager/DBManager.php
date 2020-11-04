@@ -59,7 +59,7 @@ class DBManager
         $instance = new DBManager($config);
         return !is_null(DBManager::getInstance());
     }
-    
+
     /**
      * Ajoute une bdd au manager
      *

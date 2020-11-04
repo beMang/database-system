@@ -83,9 +83,22 @@ class TableTest extends \PHPUnit\Framework\TestCase
         $entity = $table->getNewEntity();
         $table->insert($entity);
         $entity->setId(1);
-        $inDB = DBManager::getInstance()->sql('SELECT * FROM user_test WHERE id = 1', 'tests')->fetch(\PDO::FETCH_ASSOC);
+        $inDB = DBManager::getInstance()->sql('SELECT * FROM user_test WHERE id = 1', 'tests')
+        ->fetch(\PDO::FETCH_ASSOC);
         $this->assertEquals($entity->getAttribuesAsArray(), $inDB);
         $table->insert($entity);
+    }
+
+    public function testUpdateTable()
+    {
+        $table = new Table('user_test', 'tests');
+        $entity = $table->getNewEntity();
+        $entity->setId(1);
+        $entity->setName('Adrien');
+        $table->update($entity);
+        $inDB = DBManager::getInstance()->sql('SELECT name FROM user_test WHERE id = 1', 'tests')
+        ->fetch(\PDO::FETCH_BOTH);
+        $this->assertEquals('Adrien', $inDB['name']);
     }
 
     public function testFetch()
@@ -113,7 +126,8 @@ class TableTest extends \PHPUnit\Framework\TestCase
         $entity = $table->getNewEntity();
         $entity->setId(1);
         $table->delete($entity);
-        $inDB = DBManager::getInstance()->sql('SELECT * FROM user_test WHERE id = 1', 'tests')->fetch(\PDO::FETCH_ASSOC);
+        $inDB = DBManager::getInstance()->sql('SELECT * FROM user_test WHERE id = 1', 'tests')
+        ->fetch(\PDO::FETCH_ASSOC);
         $this->assertEquals(null, $inDB);
     }
 }

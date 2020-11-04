@@ -251,11 +251,9 @@ class Query
         $parts = [];
         $requestValue = [];
         $datas = [];
-        $counter = 0;
         foreach ($values as $key => $value) {
-            $counter++;
-            $requestValue[] = ':v' . $counter;
-            $parts[] = $key . ' = :v' . $counter;
+            $requestValue[] = '' . $key;
+            $parts[] = $key . ' = :' . $key;
             $datas[] = $value;
         }
         $this->setValues($requestValue, $datas);
