@@ -1,10 +1,9 @@
 <?php
 
-namespace Test;
+namespace tests\Manager;
 
 use bemang\Config;
-use bemang\Database\Query;
-use bemang\Database\DBManager;
+use bemang\Database\Manager\DBManager;
 
 class DatabaseTest extends \PHPUnit\Framework\TestCase
 {
@@ -13,9 +12,9 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
-        require(dirname(__FILE__) . '/../vendor/autoload.php');
+        require(dirname(__FILE__) . '/../../vendor/autoload.php');
         $pdo = new \PDO('mysql:host=localhost', 'root', '', [
             \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
             \PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"]);
@@ -45,24 +44,45 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public static function tearDownAfterClass()
+    public static function tearDownAfterClass(): void
     {
         $pdo = new \PDO('mysql:host=localhost', 'root', '', [
             \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
             \PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"]);
         $pdo->prepare('DROP DATABASE `test`')->execute();
+        try {
+            DBManager::getInstance()->reset();
+        } catch (\Exception $e) {
+            //don't mind
+        }
     }
 
     public function testWithEmptyConfig()
     {
-        $this->expectExceptionMessage('Aucune configuration donnée');
+        $this->expectExceptionMessage('Le manager doit d\'abord être configuré avant d\'être utilisé');
         $manager = DBManager::getInstance();
     }
 
-    public function testInitAndAddDatabase()
+    public function testInvalidConfig()
     {
+        $this->expectExceptionMessage('Le champ databases n\'existe pas dans cette configuration');
         $config = new Config();
-        $manager = DBManager::getInstance($config);
+        $this->assertFalse(DBManager::config($config));
+    }
+
+    public function testValidConfig()
+    {
+        $config = new Config([
+            'databases' => [
+                'test' => ['mysql:host=localhost;dbname=test', 'root', '']
+            ]
+        ]);
+        $this->assertTrue(DBManager::config($config));
+    }
+
+    public function testAddDatabase()
+    {
+        $manager = DBManager::getInstance();
         $this->assertTrue($manager->addDatabase('base', 'mysql:host=localhost;dbname=test', 'root', ''));
     }
 
@@ -76,7 +96,7 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
     public function testInvalidStringOnAddDatabase()
     {
         $manager = DBManager::getInstance();
-        $this->expectExceptionMessage('L\'identifiant de la db doit être une chaine de caractères non-vides');
+        $this->expectExceptionMessage('L\'identifiant de la db ne peut pas être vide');
         $manager->addDatabase(5757, 'mysql:host=localhost;dbname=test', 'root', '');
         $manager->addDatabase('', 'mysql:host=localhost;dbname=test', 'root', '');
     }
@@ -90,9 +110,9 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
 
     public function testGetInvalidStringDatabase()
     {
-        $this->expectExceptionMessage('L\'identifiant doit être une chaine de caractères');
+        $this->expectException(\TypeError::class);
         $manager = DBManager::getInstance();
-        $manager->getDatabase(55454);
+        $manager->getDatabase([55454]);
     }
 
     public function testDatabaseExist()
@@ -101,5 +121,12 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($manager->dataBaseExist('base'));
         $this->assertFalse($manager->dataBaseExist(uniqid()));
         $this->assertFalse($manager->dataBaseExist(545));
+    }
+
+    public function testReset()
+    {
+        DBManager::getInstance()->reset();
+        $this->expectExceptionMessage('Le manager doit d\'abord être configuré avant d\'être utilisé');
+        $manager = DBManager::getInstance();
     }
 }
