@@ -6,18 +6,18 @@ use bemang\Database\Exceptions\QueryBuilderException;
 
 class Query
 {
-    protected $selects = [];
+    protected array $selects = [];
 
-    protected $table = [];
+    protected array $table = [];
 
-    protected $conditions = [];
+    protected array $conditions = [];
 
-    protected $order = [
+    protected array $order = [
         'by' => null,
         'order' => 'ASC'
     ];
 
-    protected $join = [
+    protected array $join = [
         'type' => null,
         'table' => null,
         'on' => null
@@ -26,13 +26,13 @@ class Query
     protected $limit;
     protected $offset;
 
-    protected $insert = [];
+    protected array $insert = [];
 
-    protected $update = [];
+    protected array $update = [];
 
-    protected $delete = [];
+    protected bool $delete;
 
-    protected $values = []; //Valeurs de sortie pour update et insert
+    protected array $values = []; //Valeurs de sortie pour update et insert
 
     public function __construct()
     {

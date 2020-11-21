@@ -9,10 +9,10 @@ use bemang\Database\Exceptions\TableException;
 
 class Table
 {
-    protected $databaseName;
-    protected $name;
+    protected string $databaseName;
+    protected string $name;
 
-    protected $entityClassName;
+    protected string $entityClassName;
 
     /**
      * Constructeur d'une table

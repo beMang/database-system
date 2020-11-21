@@ -8,7 +8,7 @@ use bemang\Database\Exceptions\DBManagerException;
 
 class DBManager
 {
-    protected $pdoInstances = [];
+    protected array $pdoInstances = [];
     protected $configInstance;
     protected static $selfInstance = null;
 
