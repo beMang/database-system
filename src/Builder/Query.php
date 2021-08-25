@@ -108,7 +108,7 @@ class Query
         return $this;
     }
 
-    public function join(string $type = 'INNER', string $table, string ...$conditions): self
+    public function join(string $table, string $type = 'INNER', string ...$conditions): self
     {
         $this->join['type'] = $type;
         $this->join['table'] = $table;
@@ -178,7 +178,7 @@ class Query
 
     protected function buildFrom(): string
     {
-        $fromParts;
+        $fromParts = [];
         foreach ($this->table as $key => $table) {
             if (is_string($key)) {
                 $fromParts = $table . ' AS ' . $key;
