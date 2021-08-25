@@ -14,6 +14,8 @@ cache:
   directories:
   - vendor
 
+before_script: echo 'xdebug.mode=coverage' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
+
 script:
   - phpunit --coverage-clover /home/travis/build/beMang/database-system/build/logs/clover.xml
 
