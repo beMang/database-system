@@ -1,7 +1,7 @@
 language: php
 
 php:
-  - 7.4
+  - 8.0
 
 services:
   - mysql
@@ -15,7 +15,7 @@ cache:
   - vendor
 
 script:
-  - phpunit --coverage-clover build/logs/clover.xml
+  - phpunit --coverage-clover /home/travis/build/beMang/database-system/build/logs/clover.xml
 
 after_success:
   - composer require php-coveralls/php-coveralls
