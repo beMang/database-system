@@ -63,7 +63,9 @@ class Table
     {
         if ($id instanceof Entity) {
             $id = $id->getId();
-        } elseif (!is_numeric($id)) {
+        } elseif (is_numeric($id)) {
+            $id = $id;
+        } else {
             throw new TableException('L\'id doit être numérique ou avoir la classe Entity');
         }
 
@@ -93,10 +95,17 @@ class Table
         }
     }
 
-    public function delete(Entity $entity): bool
+    public function delete($id): bool
     {
+        if ($id instanceof Entity) {
+            $id = $id->getId();
+        } elseif (is_numeric($id)) {
+            $id = $id;
+        } else {
+            throw new TableException('L\'id doit être numérique ou avoir la classe Entity');
+        }
         $queryBuilder = DBManager::getInstance()->getBuilder();
-        $queryBuilder->setTable($this->name)->delete('id = :id')->addValue('id', $entity->getId());
+        $queryBuilder->setTable($this->name)->delete('id = :id')->addValue('id', $id);
         $query = DBManager::getInstance()->getDatabase($this->databaseName)->prepare($queryBuilder->toSql());
         return $query->execute($queryBuilder->getValues());
     }

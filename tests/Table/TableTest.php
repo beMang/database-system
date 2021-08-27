@@ -2,10 +2,8 @@
 
 namespace tests\Manager\Table;
 
-use bemang\Config;
 use bemang\Database\Table;
 use bemang\Database\Manager\DBManager;
-use bemang\Database\Table\EntityGenerator;
 
 class TableTest extends \PHPUnit\Framework\TestCase
 {
