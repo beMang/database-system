@@ -22,6 +22,11 @@ abstract class Entity
         return $attributes;
     }
 
+    final public function getEntityClassName()
+    {
+        return get_class($this);
+    }
+
     final public function getId()
     {
         return $this->id;

@@ -62,7 +62,6 @@ class EntityGenerator
                 '($parameter){$this->' . $field . ' = $parameter;}';
             }
         }
-        $methods[] = 'public function getEntityClassName(){return __CLASS__;}';
         return join('', $methods);
     }
 }
