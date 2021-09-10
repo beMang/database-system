@@ -73,7 +73,7 @@ class Table
         $queryBuilder->setTable($this->name)->select('*')->where('id = :id')->addValue('id', $id);
         $query = DBManager::getInstance()->getDatabase($this->databaseName)->prepare($queryBuilder->toSql());
         $succes = $query->execute($queryBuilder->getValues());
-        if ($query->rowCount() > 1) {
+        if ($query->rowCount() > 1) { //If 2 line have the same id (impossible normally)
             return $query->fetchAll(\PDO::FETCH_CLASS, $this->getEntityClassName());
         } elseif ($succes == true) {
             $query->setFetchMode(\PDO::FETCH_CLASS, $this->getEntityClassName());

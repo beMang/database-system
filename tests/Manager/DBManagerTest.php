@@ -68,6 +68,14 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
         $this->expectExceptionMessage('Le champ databases n\'existe pas dans cette configuration');
         $config = new Config();
         $this->assertFalse(DBManager::config($config));
+
+        $config = new Config([
+            'databases' => [
+                'test' => ['mysql:host=localhost;dbname=test', ''] //Invalid config
+            ]
+        ]);
+        $this->expectExceptionCode(1);
+        DBManager::config($config);
     }
 
     public function testValidConfig()
@@ -121,6 +129,14 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($manager->dataBaseExist('base'));
         $this->assertFalse($manager->dataBaseExist(uniqid()));
         $this->assertFalse($manager->dataBaseExist(545));
+    }
+
+    public function testRemoveDatabase()
+    {
+        $manager = DBManager::getInstance();
+        $this->assertFalse($manager->removeDatabase(uniqid()));
+        $this->assertTrue($manager->removeDatabase('base'));
+        $this->assertFalse($manager->dataBaseExist('base'));
     }
 
     public function testReset()

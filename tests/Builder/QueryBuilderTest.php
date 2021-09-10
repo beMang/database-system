@@ -115,4 +115,11 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
         $query = (new Query())->delete('id = 9')->setTable('users');
         $this->assertEquals('DELETE FROM users WHERE (id = 9)', (string)$query);
     }
+
+    public function testInvalidQuery()
+    {
+        $query = new Query();
+        $this->expectExceptionMessage('La requête n\'a aucune propriété valable.');
+        $query->toSql();
+    }
 }

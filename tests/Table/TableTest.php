@@ -2,6 +2,7 @@
 
 namespace tests\Manager\Table;
 
+use bemang\Database\Exceptions\TableException;
 use bemang\Database\Table;
 use bemang\Database\Manager\DBManager;
 
@@ -75,7 +76,7 @@ class TableTest extends \PHPUnit\Framework\TestCase
     }
 
 
-    public function testCreationTable()
+    public function testInsertTable()
     {
         $table = new Table('user_test', 'tests');
         $entity = $table->getNewEntity();
@@ -107,6 +108,21 @@ class TableTest extends \PHPUnit\Framework\TestCase
         $query->setFetchMode(\PDO::FETCH_CLASS, $table->getEntityClassName());
         $inDb = $query->fetch();
         $this->assertEquals($inDb, $entity);
+
+        $entity = $table->getNewEntity();
+        $entity->setId(1);
+        $entity = $table->fetch($entity);
+        $this->assertEquals($inDb, $entity);
+    }
+
+    public function testFetchException()
+    {
+        $table = new Table('user_test', 'tests');
+        $this->expectExceptionMessage('L\'id doit être numérique ou avoir la classe Entity');
+        $table->fetch('Test');
+
+        $this->expectException(TableException::class);
+        $table->fetch(uniqid());
     }
 
     public function testFetchAll()
@@ -127,5 +143,20 @@ class TableTest extends \PHPUnit\Framework\TestCase
         $inDB = DBManager::getInstance()->sql('SELECT * FROM user_test WHERE id = 1', 'tests')
         ->fetch(\PDO::FETCH_ASSOC);
         $this->assertEquals(null, $inDB);
+
+        $table->delete(2);
+        $inDB = DBManager::getInstance()->sql('SELECT * FROM user_test WHERE id = 2', 'tests')
+        ->fetch(\PDO::FETCH_ASSOC);
+        $this->assertEquals(null, $inDB);
+    }
+
+    public function testDeleteExcpetion()
+    {
+        $table = new Table('user_test', 'tests');
+        $this->expectExceptionMessage('L\'id doit être numérique ou avoir la classe Entity');
+        $table->delete('test');
+
+        $this->expectException(TableException::class);
+        $table->delete(uniqid());
     }
 }

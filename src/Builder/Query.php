@@ -30,7 +30,7 @@ class Query
 
     protected array $update = [];
 
-    protected bool $delete;
+    protected bool $delete = false;
 
     protected array $values = []; //Valeurs de sortie pour update et insert
 
@@ -65,7 +65,7 @@ class Query
         } elseif ($this->delete) {
             $result = $this->buildDelete();
         } else {
-            $result = 'error';
+            throw new QueryBuilderException('La requête n\'a aucune propriété valable.');
         }
         return $this->clearString($result);
     }

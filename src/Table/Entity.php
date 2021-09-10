@@ -14,7 +14,7 @@ abstract class Entity
             $reflexion = new \ReflectionProperty($this->getEntityClassName(), $name);
             $declaringClassName = $reflexion->getDeclaringClass()->getName();
             $arrayNames = explode('\\', $declaringClassName);
-            if ($arrayNames[count($arrayNames) - 2] != 'Entities') {
+            if ($arrayNames[count($arrayNames) - 2] != 'Entities') { //Comportement inconnu
                 unset($attributes[$name]);
             }
         }

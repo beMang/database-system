@@ -112,7 +112,7 @@ class DBManager
      *
      * @return bool
      */
-    public function dataBaseExist($name): bool
+    public function dataBaseExist(string $name): bool
     {
         if (is_string($name)) {
             if (isset($this->pdoInstances[$name])) {
@@ -120,6 +120,16 @@ class DBManager
             } else {
                 return false;
             }
+        } else {
+            return false;
+        }
+    }
+
+    public function removeDatabase(string $name): bool
+    {
+        if ($this->dataBaseExist($name)) {
+            unset($this->pdoInstances[$name]);
+            return true;
         } else {
             return false;
         }
