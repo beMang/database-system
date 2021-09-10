@@ -4,6 +4,7 @@ namespace bemang\Database\Exceptions;
 
 /**
  * Exception du manager
+ * @codeCoverageIgnore
  */
 class DBManagerException extends \Exception
 {
