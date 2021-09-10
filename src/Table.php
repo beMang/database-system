@@ -7,6 +7,9 @@ use bemang\Database\Manager\DBManager;
 use bemang\Database\Table\EntityGenerator;
 use bemang\Database\Exceptions\TableException;
 
+/**
+ * Permet la gestion simple d'une table sql
+ */
 class Table
 {
     protected string $databaseName;
@@ -27,6 +30,11 @@ class Table
         $this->databaseName = $databaseName;
     }
 
+    /**
+     * Renvoie une entitée vide de la table
+     *
+     * @return Entity
+     */
     public function getNewEntity(): Entity
     {
         $className = $this->getEntityClassName();
@@ -38,6 +46,12 @@ class Table
         return $this->entityClassName;
     }
 
+    /**
+     * Insère une entitée dans la table
+     *
+     * @param Entity $entity
+     * @return boolean
+     */
     public function insert(Entity $entity): bool
     {
         $id = $entity->getId();
@@ -51,6 +65,12 @@ class Table
         return $query->execute($queryBuilder->getValues());
     }
 
+    /**
+     * Met à jour une entité de la table
+     *
+     * @param Entity $entity
+     * @return boolean
+     */
     public function update(Entity $entity): bool
     {
         $queryBuilder = DBManager::getInstance()->getBuilder();
@@ -59,16 +79,17 @@ class Table
         return $query->execute($queryBuilder->getValues());
     }
 
-    public function fetch($id): Entity
+    /**
+     * Récupère une seule entité de la table
+     *
+     * @param Entity|numeric $id
+     * @return Entity|bool Vaux faux si la valeur n'existe pas
+     */
+    public function fetch(Entity|int $id): Entity|bool
     {
         if ($id instanceof Entity) {
             $id = $id->getId();
-        } elseif (is_numeric($id)) {
-            $id = $id;
-        } else {
-            throw new TableException('L\'id doit être numérique ou avoir la classe Entity');
         }
-
         $queryBuilder = DBManager::getInstance()->getBuilder();
         $queryBuilder->setTable($this->name)->select('*')->where('id = :id')->addValue('id', $id);
         $query = DBManager::getInstance()->getDatabase($this->databaseName)->prepare($queryBuilder->toSql());
@@ -83,6 +104,11 @@ class Table
         }
     }
 
+    /**
+     * Récupère toutes les entités de la table
+     *
+     * @return array
+     */
     public function fetchAll(): array
     {
         $queryBuilder = DBManager::getInstance()->getBuilder();
@@ -95,14 +121,16 @@ class Table
         }
     }
 
-    public function delete($id): bool
+    /**
+     * Supprime une entité de la table
+     *
+     * @param integer|Entity $id
+     * @return boolean
+     */
+    public function delete(int|Entity $id): bool
     {
         if ($id instanceof Entity) {
             $id = $id->getId();
-        } elseif (is_numeric($id)) {
-            $id = $id;
-        } else {
-            throw new TableException('L\'id doit être numérique ou avoir la classe Entity');
         }
         $queryBuilder = DBManager::getInstance()->getBuilder();
         $queryBuilder->setTable($this->name)->delete('id = :id')->addValue('id', $id);

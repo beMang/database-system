@@ -4,6 +4,9 @@ namespace bemang\Database\Table;
 
 use bemang\Database\Manager\DBManager;
 
+/**
+ * Génère les classes de chaque entité d'une base de donnée
+ */
 class EntityGenerator
 {
     public static function generate(string $tableName, string $databaseName, DBManager $manager): string

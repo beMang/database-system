@@ -6,6 +6,9 @@ use bemang\ConfigInterface;
 use bemang\Database\Builder\Query;
 use bemang\Database\Exceptions\DBManagerException;
 
+/**
+ * Permet la gestion de multiple base de donnée
+ */
 class DBManager
 {
     protected array $pdoInstances = [];
@@ -39,6 +42,11 @@ class DBManager
         self::$selfInstance = $this;
     }
 
+    /**
+     * Récupère une instance (globale) du manager
+     *
+     * @return DBManager
+     */
     public static function getInstance(): DBManager
     {
         if (is_null(self::$selfInstance)) {
@@ -61,11 +69,11 @@ class DBManager
     }
 
     /**
-     * Ajoute une bdd au manager
+     * Ajouter une base de donnée au manager
      *
-     * bdd en utf8 et affichage des exceptions
-     *
-     * @return bool
+     * @param string $name Le nom de la base de donnée
+     * @param string $hostAndDb
+     * @return boolean
      */
     public function addDatabase(
         string $name,
@@ -94,8 +102,9 @@ class DBManager
 
 
     /**
-     * Récupère une bdd
+     * Récupère une bdd du manager
      *
+     * @param string $name
      * @return \PDO
      */
     public function getDatabase(string $name): \PDO
@@ -108,23 +117,26 @@ class DBManager
     }
 
     /**
-     * Vérifie si une bdd existe
+     * Vérifie si une base de donnée existe
      *
-     * @return bool
+     * @param string $name Le nom à vérifier
+     * @return boolean
      */
     public function dataBaseExist(string $name): bool
     {
-        if (is_string($name)) {
-            if (isset($this->pdoInstances[$name])) {
-                return true;
-            } else {
-                return false;
-            }
+        if (isset($this->pdoInstances[$name])) {
+            return true;
         } else {
             return false;
         }
     }
 
+    /**
+     * Supprime une base de donnée du manager
+     *
+     * @param string $name La base de donnée à supprimer
+     * @return boolean
+     */
     public function removeDatabase(string $name): bool
     {
         if ($this->dataBaseExist($name)) {
@@ -135,7 +147,15 @@ class DBManager
         }
     }
 
-    public function sql($sqlQuery, $db, array $params = null): \PDOStatement
+    /**
+     * Execute une requête sql sur une base de donnée
+     *
+     * @param string $sqlQuery La requête sql
+     * @param string $db La base de donnée sur laquelle la requête s'effectuera
+     * @param array|null $params Les valeurs éventuelles
+     * @return \PDOStatement
+     */
+    public function sql(string $sqlQuery, string $db, array $params = null): \PDOStatement
     {
         $db = $this->getDatabase($db);
         $query = $db->prepare($sqlQuery);
@@ -147,6 +167,12 @@ class DBManager
         return $query;
     }
 
+    /**
+     * Modifie la configuration utilisée par le manager
+     *
+     * @param ConfigInterface $config
+     * @return void
+     */
     protected function setConfig(ConfigInterface $config)
     {
         $this->configInstance = $config;
@@ -163,13 +189,14 @@ class DBManager
     }
 
     /**
-     * Reset le manager à 0
+     * Réinitialise le manager
      *
-     * @return Void
+     * @return boolean
      */
-    public function reset(): void
+    public function reset(): bool
     {
         self::$selfInstance = null;
+        return is_null(self::$selfInstance);
     }
 
     public function getBuilder(): Query

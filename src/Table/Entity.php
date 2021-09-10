@@ -2,10 +2,19 @@
 
 namespace bemang\Database\Table;
 
+/**
+ * Représente une entité/ligne de la base de donnée
+ * Par facilité, dans la bdd, chaque table aura un id
+ */
 abstract class Entity
 {
     private $id;
 
+    /**
+     * Permet de récupérer les attributs de l'entité sous forme de tableau
+     *
+     * @return array
+     */
     final public function getAttribuesAsArray(): array
     {
         $attributes = get_object_vars($this);
@@ -22,21 +31,45 @@ abstract class Entity
         return $attributes;
     }
 
-    final public function getEntityClassName()
+    /**
+     * Récupère le nom de la classe de l'entité
+     *
+     * @return string
+     */
+    final public function getEntityClassName(): string
     {
         return get_class($this);
     }
 
-    final public function getId()
+    /**
+     * Récupère l'ID de l'entité
+     *
+     * @return int
+     */
+    final public function getId(): int
     {
+        if (!is_int($this->id)) {
+            $this->id = intval($this->id);
+        }
         return $this->id;
     }
 
+    /**
+     * Modifie l'ID
+     *
+     * @param integer $id
+     * @return void
+     */
     final public function setId(int $id)
     {
         $this->id = $id;
     }
 
+    /**
+     * Vide l'ID de l'entité
+     *
+     * @return void
+     */
     final public function emptyId()
     {
         $this->id = null;

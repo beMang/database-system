@@ -4,6 +4,9 @@ namespace bemang\Database\Builder;
 
 use bemang\Database\Exceptions\QueryBuilderException;
 
+/**
+ * Permet de générer des requêtes SQL plus facilement
+ */
 class Query
 {
     protected array $selects = [];

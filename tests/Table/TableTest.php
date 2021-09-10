@@ -118,11 +118,7 @@ class TableTest extends \PHPUnit\Framework\TestCase
     public function testFetchException()
     {
         $table = new Table('user_test', 'tests');
-        $this->expectExceptionMessage('L\'id doit être numérique ou avoir la classe Entity');
-        $table->fetch('Test');
-
-        $this->expectException(TableException::class);
-        $table->fetch(uniqid());
+        $this->assertFalse($table->fetch(intval(uniqid())));
     }
 
     public function testFetchAll()
@@ -134,7 +130,7 @@ class TableTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($inDb, $entities);
     }
 
-    public function testDeleteColumn()
+    public function testDelete()
     {
         $table = new Table('user_test', 'tests');
         $entity = $table->getNewEntity();
@@ -148,15 +144,5 @@ class TableTest extends \PHPUnit\Framework\TestCase
         $inDB = DBManager::getInstance()->sql('SELECT * FROM user_test WHERE id = 2', 'tests')
         ->fetch(\PDO::FETCH_ASSOC);
         $this->assertEquals(null, $inDB);
-    }
-
-    public function testDeleteExcpetion()
-    {
-        $table = new Table('user_test', 'tests');
-        $this->expectExceptionMessage('L\'id doit être numérique ou avoir la classe Entity');
-        $table->delete('test');
-
-        $this->expectException(TableException::class);
-        $table->delete(uniqid());
     }
 }
