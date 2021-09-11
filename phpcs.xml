@@ -1,9 +1,9 @@
 <?xml version="1.0" ?>
 
-<ruleset name="phpgone">
+<ruleset name="databases">
     <arg name="colors"/>
     <file>./src</file>
     <file>./tests/</file>
 
-    <rule ref="PSR2"></rule>
+    <rule ref="PSR12"></rule>
 </ruleset>

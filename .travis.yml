@@ -1,12 +1,7 @@
 language: php
 
 php:
-  - 7.2.5
-  - 7.1.9
-
-matrix:
-  allow_failures:
-    - php: 7.1.9
+  - 8.0
 
 services:
   - mysql
@@ -19,8 +14,10 @@ cache:
   directories:
   - vendor
 
+before_script: echo 'xdebug.mode=coverage' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
+
 script:
-  - phpunit --coverage-clover build/logs/clover.xml
+  - phpunit --coverage-clover /home/travis/build/beMang/database-system/build/logs/clover.xml
 
 after_success:
   - composer require php-coveralls/php-coveralls

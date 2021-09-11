@@ -1,12 +1,14 @@
 {
     "name": "bemang/database-system",
-    "description": "Librairie pour la gestion de base de donn\u0000es",
+    "description": "Librairie pour la gestion de bdd",
     "type": "library",
     "license": "MIT",
-    "authors": [{
-        "name": "beMang",
-        "email": "antonuttiadrien@gmail.com"
-    }],
+    "authors": [
+        {
+            "name": "beMang",
+            "email": "antonuttiadrien@gmail.com"
+        }
+    ],
     "minimum-stability": "dev",
     "require": {
         "bemang/config-system": "^1.0"
@@ -16,7 +18,8 @@
     },
     "autoload": {
         "psr-4": {
-            "bemang\\Database\\": "src"
+            "bemang\\Database\\": "src",
+            "tests\\": "tests"
         }
     }
 }
