@@ -12,8 +12,8 @@ use bemang\Database\Exceptions\DBManagerException;
 class DBManager
 {
     protected array $pdoInstances = [];
-    protected $configInstance;
-    protected static $selfInstance = null;
+    protected ConfigInterface $configInstance;
+    protected static ?DBManager $selfInstance = null;
 
     public function __construct(ConfigInterface $config)
     {
